@@ -17,7 +17,14 @@ struct branch{
 	FVector restingRotationVector;
 	float branchMovementRandomisation;
 	float stiffness;
-	branch(FName inName, float noise) :name(inName), branchMovementRandomisation(noise) {}
+	float branchSuppressPower;
+	float branchSwayPowerA, branchSwayPowerB;
+	branch(FName inName, float inBranchSuppressPower = 0.7f, float inBranchSwayPowerA = 0.2f, float inBranchSwayPowerB = 0.3f) :
+		name(inName), 
+		branchMovementRandomisation(FMath::SRand()),
+		branchSuppressPower(inBranchSuppressPower),
+		branchSwayPowerA(inBranchSwayPowerA),
+		branchSwayPowerB(inBranchSwayPowerB) {}
 };
 
 UCLASS()
@@ -69,5 +76,5 @@ public:
 
 	
 	TArray<branch> branches;
-	TArray<branch> trunkSegments;
+	branch trunkSegment;
 };

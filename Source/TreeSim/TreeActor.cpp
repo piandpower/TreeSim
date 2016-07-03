@@ -13,53 +13,48 @@ ATreeActor::ATreeActor()
 	const ConstructorHelpers::FObjectFinder<USkeletalMesh> MeshObj(TEXT("SkeletalMesh'/Game/Tree/armaturedFixed.armaturedFixed'"));
 	TreeMeshComponent->SetSkeletalMesh(MeshObj.Object);
 
+	//Input: Name, branch noise, branch suppress power, swaypowerA, swayPowerB
+	branches.Add(branch(FName("bone001_000")));
+	branches.Add(branch(FName("bone002_000")));
+	branches.Add(branch(FName("bone003_000")));
+	branches.Add(branch(FName("bone004_000")));
+	branches.Add(branch(FName("bone005_000")));
+	branches.Add(branch(FName("bone006_000")));
+	branches.Add(branch(FName("bone007_000")));
+	branches.Add(branch(FName("bone008_000")));
+	branches.Add(branch(FName("bone009_000")));
+	branches.Add(branch(FName("bone010_000")));
+	branches.Add(branch(FName("bone011_000")));
+	branches.Add(branch(FName("bone012_000")));
+	branches.Add(branch(FName("bone013_000")));
+	branches.Add(branch(FName("bone014_000")));
+	branches.Add(branch(FName("bone015_000")));
+	branches.Add(branch(FName("bone016_000")));
+	branches.Add(branch(FName("bone017_000")));
+	branches.Add(branch(FName("bone018_000")));
+	branches.Add(branch(FName("bone019_000")));
+	branches.Add(branch(FName("bone020_000")));
+	branches.Add(branch(FName("bone021_000")));
+	branches.Add(branch(FName("bone022_000")));
+	branches.Add(branch(FName("bone023_000")));
+	branches.Add(branch(FName("bone024_000")));
+	branches.Add(branch(FName("bone025_000")));
+	branches.Add(branch(FName("bone026_000")));
+	branches.Add(branch(FName("bone027_000")));
+	branches.Add(branch(FName("bone028_000")));
+	branches.Add(branch(FName("bone029_000")));
+	branches.Add(branch(FName("bone030_000")));
+	branches.Add(branch(FName("bone031_000")));
+	branches.Add(branch(FName("bone032_000")));
+	branches.Add(branch(FName("bone033_000")));
+	branches.Add(branch(FName("bone034_000")));
+	branches.Add(branch(FName("bone035_000")));
+	branches.Add(branch(FName("bone036_000")));
+	branches.Add(branch(FName("bone037_000")));
+	branches.Add(branch(FName("bone038_000")));
+	branches.Add(branch(FName("bone039_000")));
 
-	branches.Add(branch(FName("bone001_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone002_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone003_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone004_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone005_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone006_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone007_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone008_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone009_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone010_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone011_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone012_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone013_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone014_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone015_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone016_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone017_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone018_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone019_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone020_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone021_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone022_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone023_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone024_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone025_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone026_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone027_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone028_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone029_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone030_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone031_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone032_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone033_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone034_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone035_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone036_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone037_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone038_000"), FMath::SRand()));
-	branches.Add(branch(FName("bone039_000"), FMath::SRand()));
-
-
-	//Trunk segments
-	trunkSegments.Add(branch(FName("trunk1"), FMath::SRand()));
-	trunkSegments.Add(branch(FName("trunk2"), FMath::SRand()));
-	trunkSegments.Add(branch(FName("trunk3"), FMath::SRand()));
-	trunkSegments.Add(branch(FName("trunk4"), FMath::SRand()));
+	trunkSegment = branch(FName("trunk1"));
 }
 
 // Called when the game starts or when spawned
@@ -78,21 +73,26 @@ void ATreeActor::BeginPlay()
 		branches[i].restingRotationVector.Normalize();
 	}
 
-	for (int i = 0; i < trunkSegments.Num(); i++){
-		trunkSegments[i].restingRot = TreeMeshComponent->GetBoneQuaternion(trunkSegments[i].name, EBoneSpaces::WorldSpace);
-	}
+	trunkSegment.restingRot = TreeMeshComponent->GetBoneQuaternion(trunkSegment.name, EBoneSpaces::WorldSpace);
 }
 
 
 float lerp(float a, float b, float c){
 	return a + c * (b - a);
 }
+
 FQuat quatAroundY(float angle){
 	float sinha = sin(angle*0.5);
 	float cosha = cos(angle*0.5);
 	return FQuat(0.f, sinha, 0.f, cosha);
 }
+
 static int runCount = 0;
+
+float calculateWindPower(float time) {
+	return cos(time) * cos(time * 3.f) * cos(time * 5.f) * cos(time * 7.f) + sin(time * 25.f) * 1.f;
+}
+
 // Called every frame
 void ATreeActor::Tick( float DeltaTime )
 {
@@ -102,43 +102,40 @@ void ATreeActor::Tick( float DeltaTime )
 
 
 	//Get wind direction & calculate wind tangent
-	FVector windRotationVector = windSource->GetActorRotation().Euler();
-	windRotationVector.Normalize();
-	FVector windTangent = FVector(-windRotationVector.Z, windRotationVector.Y, windRotationVector.X);
+	FVector windDirection = windSource->GetActorRotation().Euler();
 
-	//Calculate wind power
-	float timeMult = RunningTime / 10.f;
-	float windPower = cos(timeMult * PI) * cos(timeMult * 3.f * PI) * cos(timeMult * 5.f * PI) * cos(timeMult * 7.f * PI) + sin(timeMult * 25.f * PI) * 1.f;
+	windDirection.Normalize();
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, windDirection.ToString());
+	FVector windTangent = FVector(-windDirection.Z, windDirection.Y, windDirection.X);
 
 	//Bend the trunk
-	float trunkMovementMult = 2.f;
+	float timeMult = RunningTime / 3.f;
+	float trunkMovementMult = 4.f;
+	float windPower = calculateWindPower(timeMult);
 	FVector trunkMovement = FVector((windTangent.X)*windPower*trunkMovementMult, (windTangent.Y)*windPower*trunkMovementMult, (windTangent.Z)*windPower*trunkMovementMult);
 	//FQuat trunkRotation = FQuat(FVector::UpVector.Rotation());
 	FQuat trunkRotation;
-	for (int i = 0; i < trunkSegments.Num(); i++){
+	for (int i = 0; i < 1; i++){
 		trunkRotation = trunkSegments[i].restingRot;
 		trunkRotation *= FQuat::MakeFromEuler(trunkMovement);
 		TreeMeshComponent->SetBoneRotationByName(trunkSegments[i].name, FRotator(trunkRotation), EBoneSpaces::WorldSpace);
 	}
-	//rot.Pitch = windPower;
-	//rot.Pitch += 0.05 * cos(RunningTime);
-	//TreeMeshComponent->SetBoneRotationByName(FName("trunk1"), FRotator(trunkRotation), EBoneSpaces::WorldSpace);
 
 
 	FQuat branchQuat;
 	float a, oldA, b;
-	float branchSuppressPower = 0.7f;
-	float branchSwayPowerA = 0.2f, branchSwayPowerB = 0.3f, branchNoise = 0.9f;
+	float branchNoise = 1.f;
 	for (int i = 0; i < branches.Num(); i++){
+		branches[i].restingRotationVector = TreeMeshComponent->GetBoneRotationByName(branches[i].name, EBoneSpaces::WorldSpace).Euler();
+
 		//How much is the branch facing the wind
-		
-		float facingWind = FVector::DotProduct(FVector(branches[i].restingRotationVector.X, 0.f, branches[i].restingRotationVector.Z), windRotationVector);
+		float facingWind = FVector::DotProduct(FVector(branches[i].restingRotationVector.X, 0.f, branches[i].restingRotationVector.Z), windDirection)/180.f;
 
-		oldA = branchSwayPowerA * cos(timeMult + branchNoise * branches[i].branchMovementRandomisation);
+		oldA = branches[i].branchSwayPowerA * cos(timeMult + branchNoise * branches[i].branchMovementRandomisation);
 
-		a = -0.5f * oldA + branchSuppressPower * branchSwayPowerA;
+		a = -0.5f * oldA + branches[i].branchSuppressPower * branches[i].branchSwayPowerA;
 
-		b = branchSwayPowerB * cos(timeMult + branchNoise * branches[i].branchMovementRandomisation) * windPower;
+		b = branches[i].branchSwayPowerB * cos(delayedTime + branchNoise * branches[i].branchMovementRandomisation) * windPower;
 
 		a = lerp(oldA * windPower, a * windPower, delayedWindPower * std::fmin(std::fmax(1.f-facingWind, 0.f), 1.f));
 
@@ -157,5 +154,5 @@ void ATreeActor::Tick( float DeltaTime )
 	}
 	runCount++;
 	delayedTime = timeMult;
-	delayedWindPower = windPower;
+	delayedWindPower = (windPower + delayedWindPower)/2;
 }
