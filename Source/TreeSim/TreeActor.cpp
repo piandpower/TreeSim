@@ -64,10 +64,6 @@ void ATreeActor::BeginPlay()
 	FRotator branchRotator;
 	for (int i = 0; i < branches.Num(); i++){
 		branches[i].restingRot = TreeMeshComponent->GetBoneQuaternion(branches[i].name, EBoneSpaces::WorldSpace);
-		//branchRotator = TreeMeshComponent->GetBoneRotationByName(branches[i].name, EBoneSpaces::WorldSpace);
-		//branches[i].restingRotationVector = FVector(branchRotator.Pitch, branchRotator.Roll, branchRotator.Yaw);
-		
-		//branches[i].restingRotationVector = TreeMeshComponent->GetBoneRotationByName(branches[i].name, EBoneSpaces::ComponentSpace).Vector();
 		branchRotator = TreeMeshComponent->GetBoneRotationByName(branches[i].name, EBoneSpaces::WorldSpace);
 		branches[i].restingRotationVector = branchRotator.Euler();
 		branches[i].restingRotationVector.Normalize();
@@ -105,7 +101,7 @@ void ATreeActor::Tick( float DeltaTime )
 	FVector windDirection = windSource->GetActorRotation().Euler();
 
 	windDirection.Normalize();
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, windDirection.ToString());
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, windDirection.ToString());
 	FVector windTangent = FVector(-windDirection.Z, windDirection.Y, windDirection.X);
 
 	//Bend the trunk
@@ -114,12 +110,9 @@ void ATreeActor::Tick( float DeltaTime )
 	float windPower = calculateWindPower(timeMult);
 	FVector trunkMovement = FVector((windTangent.X)*windPower*trunkMovementMult, (windTangent.Y)*windPower*trunkMovementMult, (windTangent.Z)*windPower*trunkMovementMult);
 	//FQuat trunkRotation = FQuat(FVector::UpVector.Rotation());
-	FQuat trunkRotation;
-	for (int i = 0; i < 1; i++){
-		trunkRotation = trunkSegments[i].restingRot;
-		trunkRotation *= FQuat::MakeFromEuler(trunkMovement);
-		TreeMeshComponent->SetBoneRotationByName(trunkSegments[i].name, FRotator(trunkRotation), EBoneSpaces::WorldSpace);
-	}
+	FQuat trunkRotation = trunkSegment.restingRot;
+	trunkRotation *= FQuat::MakeFromEuler(trunkMovement);
+	TreeMeshComponent->SetBoneRotationByName(trunkSegment.name, FRotator(trunkRotation), EBoneSpaces::WorldSpace);
 
 
 	FQuat branchQuat;

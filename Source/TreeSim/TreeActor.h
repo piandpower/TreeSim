@@ -19,12 +19,13 @@ struct branch{
 	float stiffness;
 	float branchSuppressPower;
 	float branchSwayPowerA, branchSwayPowerB;
-	branch(FName inName, float inBranchSuppressPower = 0.7f, float inBranchSwayPowerA = 0.2f, float inBranchSwayPowerB = 0.3f) :
+	branch(FName inName, float inBranchSuppressPower = 0.7f, float inBranchSwayPowerA = 0.1f, float inBranchSwayPowerB = 0.3f) :
 		name(inName), 
 		branchMovementRandomisation(FMath::SRand()),
 		branchSuppressPower(inBranchSuppressPower),
 		branchSwayPowerA(inBranchSwayPowerA),
 		branchSwayPowerB(inBranchSwayPowerB) {}
+	branch(){}
 };
 
 UCLASS()
