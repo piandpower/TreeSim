@@ -119,7 +119,7 @@ void ATreeActor::Tick( float DeltaTime )
 	float a, oldA, b;
 	float branchNoise = 1.f;
 	for (int i = 0; i < branches.Num(); i++){
-		branches[i].restingRotationVector = TreeMeshComponent->GetBoneRotationByName(branches[i].name, EBoneSpaces::WorldSpace).Euler();
+		branches[i].restingRotationVector = TreeMeshComponent->GetBoneRotationByName(branches[i].name, EBoneSpaces::ComponentSpace).Euler();
 
 		//How much is the branch facing the wind
 		float facingWind = FVector::DotProduct(FVector(branches[i].restingRotationVector.X, 0.f, branches[i].restingRotationVector.Z), windDirection)/180.f;
