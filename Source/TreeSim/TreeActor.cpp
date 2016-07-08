@@ -61,11 +61,10 @@ ATreeActor::ATreeActor()
 void ATreeActor::BeginPlay()
 {
 	Super::BeginPlay();
-	FRotator branchRotator;
+
 	for (int i = 0; i < branches.Num(); i++){
 		branches[i].restingRot = TreeMeshComponent->GetBoneQuaternion(branches[i].name, EBoneSpaces::WorldSpace);
-		branchRotator = TreeMeshComponent->GetBoneRotationByName(branches[i].name, EBoneSpaces::WorldSpace);
-		branches[i].restingRotationVector = branchRotator.Euler();
+		branches[i].restingRotationVector = TreeMeshComponent->GetBoneRotationByName(branches[i].name, EBoneSpaces::WorldSpace).Euler();
 		branches[i].restingRotationVector.Normalize();
 	}
 
@@ -99,32 +98,33 @@ void ATreeActor::Tick( float DeltaTime )
 
 	//Get wind direction & calculate wind tangent
 	FVector windDirection = windSource->GetActorRotation().Euler();
-
 	windDirection.Normalize();
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, windDirection.ToString());
+
 	FVector windTangent = FVector(-windDirection.Z, windDirection.Y, windDirection.X);
 
 	//Bend the trunk
-	float timeMult = RunningTime / 3.f;
+	float time = RunningTime / (3.f + (windOffset/10000.f)) + windOffset;
 	float trunkMovementMult = 4.f;
-	float windPower = calculateWindPower(timeMult);
-	FVector trunkMovement = FVector((windTangent.X)*windPower*trunkMovementMult, (windTangent.Y)*windPower*trunkMovementMult, (windTangent.Z)*windPower*trunkMovementMult);
-	//FQuat trunkRotation = FQuat(FVector::UpVector.Rotation());
+	float windPower = calculateWindPower(time);
+	FQuat trunkMovement = FQuat::MakeFromEuler(FVector((windTangent.X)*windPower*trunkMovementMult, (windTangent.Y)*windPower*trunkMovementMult, (windTangent.Z)*windPower*trunkMovementMult));
 	FQuat trunkRotation = trunkSegment.restingRot;
-	trunkRotation *= FQuat::MakeFromEuler(trunkMovement);
+	trunkRotation *= trunkMovement;
 	TreeMeshComponent->SetBoneRotationByName(trunkSegment.name, FRotator(trunkRotation), EBoneSpaces::WorldSpace);
 
 
 	FQuat branchQuat;
+	FQuat branchInheritedMovement;
 	float a, oldA, b;
-	float branchNoise = 1.f;
+	float branchNoise = 2.f;
+	time -= 0.3f;
 	for (int i = 0; i < branches.Num(); i++){
-		branches[i].restingRotationVector = TreeMeshComponent->GetBoneRotationByName(branches[i].name, EBoneSpaces::ComponentSpace).Euler();
+		windPower = calculateWindPower(time + branches[i].branchMovementRandomisation)/2.f;
+		branchQuat = TreeMeshComponent->GetBoneQuaternion(branches[i].name, EBoneSpaces::WorldSpace);
+		branches[i].restingRotationVector = branchQuat.Rotator().Euler();
 
-		//How much is the branch facing the wind
-		float facingWind = FVector::DotProduct(FVector(branches[i].restingRotationVector.X, 0.f, branches[i].restingRotationVector.Z), windDirection)/180.f;
+		float facingWind = FVector::DotProduct(FVector(branches[i].restingRotationVector.X, 0.f, branches[i].restingRotationVector.Z), windDirection) / 180.f;
 
-		oldA = branches[i].branchSwayPowerA * cos(timeMult + branchNoise * branches[i].branchMovementRandomisation);
+		oldA = branches[i].branchSwayPowerA * cos(time + branchNoise * branches[i].branchMovementRandomisation);
 
 		a = -0.5f * oldA + branches[i].branchSuppressPower * branches[i].branchSwayPowerA;
 
@@ -138,14 +138,12 @@ void ATreeActor::Tick( float DeltaTime )
 		rotation2.Normalize();
 
 		FQuat endRotation = FQuat::FastLerp(rotation1, rotation2, 1 - abs(facingWind));
-		
-		endRotation = branches[i].restingRot * endRotation;
+		endRotation = trunkMovement * branches[i].restingRot * endRotation;
 		endRotation.Normalize();
 		
 		TreeMeshComponent->SetBoneRotationByName(branches[i].name, FRotator(endRotation), EBoneSpaces::WorldSpace);
-
 	}
 	runCount++;
-	delayedTime = timeMult;
+	delayedTime = time;
 	delayedWindPower = (windPower + delayedWindPower)/2;
 }

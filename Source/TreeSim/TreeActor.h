@@ -19,9 +19,9 @@ struct branch{
 	float stiffness;
 	float branchSuppressPower;
 	float branchSwayPowerA, branchSwayPowerB;
-	branch(FName inName, float inBranchSuppressPower = 1.3f, float inBranchSwayPowerA = 0.13f, float inBranchSwayPowerB = 0.3f) :
+	branch(FName inName, float inBranchSuppressPower = .6f, float inBranchSwayPowerA = 0.3f, float inBranchSwayPowerB = 0.3f) :
 		name(inName), 
-		branchMovementRandomisation(FMath::SRand()),
+		branchMovementRandomisation(FMath::Rand()),
 		branchSuppressPower(inBranchSuppressPower),
 		branchSwayPowerA(inBranchSwayPowerA),
 		branchSwayPowerB(inBranchSwayPowerB) {}
@@ -34,7 +34,8 @@ class TREESIM_API ATreeActor : public AActor
 	GENERATED_BODY()
 
 	float RunningTime=0.f;
-	float delayedWindPower=0.f, delayedTime=0.f;
+	float delayedWindPower = 0.f, delayedTime = 0.f;
+	float windOffset = FMath::Rand()*0.5f;
 public:	
 	// Sets default values for this actor's properties
 	ATreeActor();
@@ -75,7 +76,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = TreeWind)
 		AWindDirectionalSource *windSource;
 
-	
 	TArray<branch> branches;
 	branch trunkSegment;
 };
