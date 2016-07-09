@@ -16,15 +16,9 @@ struct branch{
 	FQuat restingRot;
 	FVector restingRotationVector;
 	float branchMovementRandomisation;
-	float stiffness;
-	float branchSuppressPower;
-	float branchSwayPowerA, branchSwayPowerB;
-	branch(FName inName, float inBranchSuppressPower = .6f, float inBranchSwayPowerA = 0.3f, float inBranchSwayPowerB = 0.3f) :
+	branch(FName inName) :
 		name(inName), 
-		branchMovementRandomisation(FMath::Rand()),
-		branchSuppressPower(inBranchSuppressPower),
-		branchSwayPowerA(inBranchSwayPowerA),
-		branchSwayPowerB(inBranchSwayPowerB) {}
+		branchMovementRandomisation(FMath::Rand()) {}
 	branch(){}
 };
 
@@ -36,6 +30,7 @@ class TREESIM_API ATreeActor : public AActor
 	float RunningTime=0.f;
 	float delayedWindPower = 0.f, delayedTime = 0.f;
 	float windOffset = FMath::Rand()*0.5f;
+	float calculateWindPower(float time);
 public:	
 	// Sets default values for this actor's properties
 	ATreeActor();
@@ -56,22 +51,13 @@ public:
 		float windIntensity = 1.f;
 
 	UPROPERTY(EditAnywhere, Category = Tree)
-		float trunkMass = 1.f;
+		float branchSuppressPower = .6f;
 
 	UPROPERTY(EditAnywhere, Category = Tree)
-		float trunkDampingCoefficient = 1.f;
+		float branchSwayPowerA = 0.3f;
 
 	UPROPERTY(EditAnywhere, Category = Tree)
-		float trunkStiffnessCoefficient = 1.f;
-
-	UPROPERTY(EditAnywhere, Category = Tree)
-		float branchMass = 1.f;
-
-	UPROPERTY(EditAnywhere, Category = Tree)
-		float branchDampingCoefficient = 1.f;
-
-	UPROPERTY(EditAnywhere, Category = Tree)
-		float branchStiffnessCoefficient = 1.f;
+		float branchSwayPowerB = 0.3f;
 
 	UPROPERTY(EditAnywhere, Category = TreeWind)
 		AWindDirectionalSource *windSource;

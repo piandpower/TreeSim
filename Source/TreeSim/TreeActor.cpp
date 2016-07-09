@@ -84,8 +84,8 @@ FQuat quatAroundY(float angle){
 
 static int runCount = 0;
 
-float calculateWindPower(float time) {
-	return cos(time) * cos(time * 3.f) * cos(time * 5.f) * cos(time * 7.f) + sin(time * 25.f) * 1.f;
+float ATreeActor::calculateWindPower(float time) {
+	return cos(time) * cos(time * 3.f) * cos(time * 5.f) * cos(time * 7.f) + sin(time * 25.f) * windSource->Component->Speed;
 }
 
 // Called every frame
@@ -97,8 +97,11 @@ void ATreeActor::Tick( float DeltaTime )
 
 
 	//Get wind direction & calculate wind tangent
-	FVector windDirection = windSource->GetActorRotation().Euler();
+	FVector windDirection = windSource->GetActorRotation().Vector();
+	windDirection = FVector(windDirection.X, windDirection.Z, windDirection.Y);
+	//GEngine->AddOnScreenDebugMessage(0, 4.f, FColor::Red, windDirection.ToString());
 	windDirection.Normalize();
+	GEngine->AddOnScreenDebugMessage(1, 4.f, FColor::Red, windDirection.ToString());
 
 	FVector windTangent = FVector(-windDirection.Z, windDirection.Y, windDirection.X);
 
@@ -124,11 +127,11 @@ void ATreeActor::Tick( float DeltaTime )
 
 		float facingWind = FVector::DotProduct(FVector(branches[i].restingRotationVector.X, 0.f, branches[i].restingRotationVector.Z), windDirection) / 180.f;
 
-		oldA = branches[i].branchSwayPowerA * cos(time + branchNoise * branches[i].branchMovementRandomisation);
+		oldA = branchSwayPowerA * cos(time + branchNoise * branches[i].branchMovementRandomisation);
 
-		a = -0.5f * oldA + branches[i].branchSuppressPower * branches[i].branchSwayPowerA;
+		a = -0.5f * oldA + branchSuppressPower * branchSwayPowerA;
 
-		b = branches[i].branchSwayPowerB * cos(delayedTime + branchNoise * branches[i].branchMovementRandomisation) * windPower;
+		b = branchSwayPowerB * cos(delayedTime + branchNoise * branches[i].branchMovementRandomisation) * windPower;
 
 		a = lerp(oldA * windPower, a * windPower, delayedWindPower * std::fmin(std::fmax(1.f-facingWind, 0.f), 1.f));
 
